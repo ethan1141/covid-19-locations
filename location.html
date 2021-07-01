@@ -21,8 +21,7 @@
             <div class="col-6 text-center">
               <h2 id="date"></h2>
             </div>
-              </div>
-
+        </div>
         <div class="col-12 d-flex flex-wrap" id="sites">
 
         </div>
@@ -32,6 +31,8 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     <script>
+    const params = new URLSearchParams(window.location.search);
+
 
       var xhttp = new XMLHttpRequest();
 xhttp.onreadystatechange = function() {
@@ -40,26 +41,52 @@ xhttp.onreadystatechange = function() {
        // Typical action to be performed when the document is ready:
        document.getElementById("title").innerHTML = json.title;
        document.getElementById("date").innerHTML = "Date: " + json.date;
-
-       var sub = [];
+       if (params.has('loc')) {
+         let loc = params.get('loc');
          for (var i = 0; i < json.data.monitor.length;i++) {
-           let a = json.data.monitor;
-           if (!sub.includes(a[i].Suburb.trim())) {
-           sub.push(a[i].Suburb.trim());
+         let a = json.data.monitor;
+           if (a[i].Suburb == loc.trim()) {
+
+             var container = document.createElement('div');
+             container.classList.add("col-6");
+             var venue = document.createElement('h1');
+             var suburb = document.createElement('h2');
+             var address = document.createElement('h3');
+             var date = document.createElement('p');
+             var time = document.createElement('p');
+             var alert = document.createElement('h6');
+             // var lon = document.createElement('p');
+             // var lat = document.createElement('p');
+             var desc = document.createElement('p');
+             var lastDate = document.createElement('p');
+
+             venue.innerHTML = a[i].Venue;
+             suburb.innerHTML = a[i].Suburb;
+             address.innerHTML = a[i].Address;
+             date.innerHTML = a[i].Date;
+             time.innerHTML = a[i].Time;
+             alert.innerHTML = a[i].Alert;
+             // lon.innerHaML = a[i].Lat;
+             desc.innerHTML = a[i].HealthAdviceHTML;
+             lastDate.innerHTML = a[i]["Last updated date"];
+
+             container.appendChild(venue);
+             container.appendChild(suburb);
+             container.appendChild(address);
+             container.appendChild(date);
+             container.appendChild(time);
+             container.appendChild(alert);
+             // container.appendChild(lat);
+             // container.appendChild(lon);
+             container.appendChild(desc);
+             container.appendChild(lastDate);
+
+             document.getElementById("sites").appendChild(container);
            }
-       }
-       sub.sort();
 
-       for (var j = 0; j < sub.length; j++) {
-       var container = document.createElement('div');
-       container.classList.add("m-3");
-       var suburb = document.createElement('h2');
-       suburb.innerHTML = '<a href="https://ethan1141.github.io/covid-19-locations/location.html?loc=' + sub[j] + '">'+sub[j]+'</a>';
-       container.appendChild(suburb);
-       document.getElementById("sites").appendChild(container);
+       }
        }
 
-       console.log(sub);
     }
 };
 xhttp.open("GET", "https://data.nsw.gov.au/data/dataset/0a52e6c1-bc0b-48af-8b45-d791a6d8e289/resource/f3a28eed-8c2a-437b-8ac1-2dab3cf760f9/download/covid-case-locations-20210701-1729.json", true);
